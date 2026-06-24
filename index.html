@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instant HVAC Estimate</title>
+  <meta name="description" content="Get an instant ballpark estimate for a new HVAC system in 60 seconds." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="head">
+      <div class="brand">
+        <img id="logo" class="logo" alt="" hidden />
+        <div>
+          <h1 id="companyName">Your HVAC Company</h1>
+          <p id="tagline" class="tagline">Instant ballpark estimate in 60 seconds</p>
+        </div>
+      </div>
+      <a id="callBtn" class="call-btn" href="tel:+18015550100">📞 <span id="phoneText">(801) 555-0100</span></a>
+    </header>
+
+    <!-- ============ FORM ============ -->
+    <form id="quoteForm" class="card" novalidate>
+      <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+
+      <section class="step">
+        <h2>1. What do you need?</h2>
+        <div id="systemOptions" class="choice-grid"><!-- filled by JS --></div>
+      </section>
+
+      <section class="step">
+        <h2>2. About how big is the home?</h2>
+        <label class="field">
+          <span>Square footage (living space)</span>
+          <input type="number" id="sqft" name="sqft" min="400" max="12000" step="50" value="2000" inputmode="numeric" />
+          <small class="hint">Not sure? A rough guess is fine — we'll confirm on site.</small>
+        </label>
+      </section>
+
+      <section class="step">
+        <h2>3. Efficiency preference</h2>
+        <div id="effOptions" class="choice-row"><!-- filled by JS --></div>
+        <small class="hint">High-efficiency costs more up front but lowers monthly bills and may qualify for rebates.</small>
+      </section>
+
+      <section class="step">
+        <h2>4. Anything else? <span class="optional">(optional)</span></h2>
+        <div id="addonOptions" class="addon-list"><!-- filled by JS --></div>
+      </section>
+
+      <section class="step">
+        <h2>5. Where should we send it?</h2>
+        <div class="grid-2">
+          <label class="field"><span>Full name</span><input type="text" id="name" name="name" autocomplete="name" required /></label>
+          <label class="field"><span>Phone</span><input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" required /></label>
+          <label class="field"><span>Email</span><input type="email" id="email" name="email" autocomplete="email" /></label>
+          <label class="field"><span>Property address</span><input type="text" id="address" name="address" autocomplete="street-address" /></label>
+        </div>
+        <label class="field">
+          <span>Best time to reach you</span>
+          <select id="contactTime" name="contactTime">
+            <option value="Anytime">Anytime</option>
+            <option value="Morning">Morning</option>
+            <option value="Afternoon">Afternoon</option>
+            <option value="Evening">Evening</option>
+          </select>
+        </label>
+      </section>
+
+      <button type="submit" id="submitBtn" class="cta">Get my instant estimate →</button>
+      <p id="formError" class="form-error" hidden></p>
+    </form>
+
+    <!-- ============ RESULT ============ -->
+    <section id="result" class="card result" hidden>
+      <p class="result-kicker">Your estimated investment</p>
+      <div id="priceRange" class="price-range">$0 – $0</div>
+      <p id="resultSummary" class="result-summary"></p>
+
+      <div class="result-cta">
+        <p><strong>This is a ballpark, not a final quote.</strong> Your exact price depends on your equipment, layout, and condition of your current system — confirmed at a free, no-pressure in-home visit.</p>
+        <a id="resultCall" class="cta" href="tel:+18015550100">📞 Call to lock in your free visit</a>
+        <button type="button" id="restartBtn" class="ghost-btn">Start over</button>
+      </div>
+
+      <details class="how">
+        <summary>How we calculated this</summary>
+        <div id="howDetail" class="how-detail"></div>
+      </details>
+    </section>
+
+    <footer class="foot">
+      <p>Estimates are for general budgeting only and are not a binding offer. Final pricing requires an in-person assessment.</p>
+    </footer>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
