@@ -1,8 +1,8 @@
 /* =====================================================================
  *  HVAC INSTANT QUOTE BUILDER — app logic
  *  You normally do NOT need to edit this file. All the numbers and
- *  branding live in config.js. This file just reads that config,
- *  builds the form, does the math, and handles the lead.
+ *  branding live in config.js. This file reads that config, builds the
+ *  form, does the math, and handles the lead.
  * ===================================================================== */
 (function () {
   "use strict";
@@ -24,47 +24,49 @@
     $("phoneText").textContent = b.phone;
     $("callBtn").href = b.phoneHref;
     $("resultCall").href = b.phoneHref;
-    if (b.logoUrl) { var l = $("logo"); l.src = b.logoUrl; l.hidden = false; }
+    var logo = $("logo");
+    if (b.logoUrl) { logo.src = b.logoUrl; logo.alt = b.companyName; }
+    else { logo.hidden = true; $("companyName").className = ""; }
   }
 
   /* ---------- Build the form from config ---------- */
   function buildForm() {
-    // System type cards
     var sysWrap = $("systemOptions");
     Object.keys(CFG.pricing.systems).forEach(function (key, i) {
       var sys = CFG.pricing.systems[key];
       var lbl = document.createElement("label");
       lbl.className = "choice";
-      lbl.innerHTML = '<input type="radio" name="system" value="' + key + '">' + sys.label;
+      lbl.innerHTML = '<input type="radio" name="system" value="' + key + '" autocomplete="off">' + sys.label;
       lbl.addEventListener("click", function () {
         state.system = key;
-        markSelected(sysWrap, lbl, "choice");
-        updateProgress();
+        markSelected(sysWrap, lbl);
       });
       sysWrap.appendChild(lbl);
-      if (i === 0) { state.system = key; lbl.classList.add("selected"); lbl.querySelector("input").checked = true; }
+      if (i === 0) state.system = key;
     });
+    // Enforce the default selection (immune to browser form-state restoration).
+    markSelected(sysWrap, sysWrap.querySelector(".choice"));
 
-    // Efficiency row
     var effWrap = $("effOptions");
     Object.keys(CFG.pricing.efficiency).forEach(function (key, i) {
       var eff = CFG.pricing.efficiency[key];
       var lbl = document.createElement("label");
-      lbl.className = "choice" + (i === 0 ? " selected" : "");
-      lbl.innerHTML = '<input type="radio" name="eff" value="' + key + '"' + (i === 0 ? " checked" : "") + ">" + eff.label;
+      lbl.className = "choice";
+      lbl.innerHTML = '<input type="radio" name="eff" value="' + key + '" autocomplete="off">' + eff.label;
       lbl.addEventListener("click", function () {
         state.efficiency = key;
-        markSelected(effWrap, lbl, "choice");
+        markSelected(effWrap, lbl);
       });
       effWrap.appendChild(lbl);
+      if (i === 0) state.efficiency = key;
     });
+    markSelected(effWrap, effWrap.querySelector(".choice"));
 
-    // Add-ons
     var addWrap = $("addonOptions");
     CFG.addons.forEach(function (a) {
       var lbl = document.createElement("label");
       lbl.className = "addon";
-      lbl.innerHTML = '<input type="checkbox" value="' + a.id + '">' + a.label;
+      lbl.innerHTML = '<input type="checkbox" value="' + a.id + '" autocomplete="off">' + a.label;
       var cb = lbl.querySelector("input");
       cb.addEventListener("change", function () {
         state.addons[a.id] = cb.checked;
@@ -74,17 +76,11 @@
     });
   }
 
-  function markSelected(wrap, el, cls) {
-    wrap.querySelectorAll("." + cls).forEach(function (n) { n.classList.remove("selected"); });
+  function markSelected(wrap, el) {
+    wrap.querySelectorAll(".choice").forEach(function (n) { n.classList.remove("selected"); });
     el.classList.add("selected");
     var input = el.querySelector("input");
     if (input) input.checked = true;
-  }
-
-  function updateProgress() {
-    var fields = [state.system, $("sqft").value, $("name").value, $("phone").value];
-    var done = fields.filter(function (v) { return v && String(v).trim(); }).length;
-    $("progressBar").style.width = Math.round((done / fields.length) * 100) + "%";
   }
 
   /* ---------- The estimate math ---------- */
@@ -92,8 +88,7 @@
 
   function computeTons(sqft) {
     var s = CFG.sizing;
-    var raw = sqft / s.sqftPerTon;
-    var rounded = Math.round(raw / s.roundToTons) * s.roundToTons;
+    var rounded = Math.round((sqft / s.sqftPerTon) / s.roundToTons) * s.roundToTons;
     return Math.min(s.maxTons, Math.max(s.minTons, rounded));
   }
 
@@ -110,7 +105,6 @@
 
     var addonLines = [];
     var accessMult = { low: 1, high: 1 };
-
     CFG.addons.forEach(function (a) {
       if (!state.addons[a.id]) return;
       if (a.kind === "flat") {
@@ -124,27 +118,22 @@
     low *= accessMult.low; high *= accessMult.high;
 
     return {
-      tons: tons,
-      sqft: sqft,
+      tons: tons, sqft: sqft,
       systemLabel: sys.label,
       effLabel: p.efficiency[state.efficiency].label,
       low: roundTo(low, p.roundTo),
       high: roundTo(high, p.roundTo),
-      base: roundTo(point, p.roundTo),
       addonLines: addonLines
     };
   }
 
-  function money(n) {
-    return "$" + Math.round(n).toLocaleString("en-US");
-  }
+  function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
 
   /* ---------- Render result ---------- */
   function showResult(est) {
     $("priceRange").textContent = money(est.low) + " – " + money(est.high);
     $("resultSummary").textContent =
-      est.systemLabel + " · ~" + est.tons + " ton · " +
-      est.sqft.toLocaleString() + " sq ft · " + est.effLabel;
+      est.systemLabel + " · ~" + est.tons + " ton · " + est.sqft.toLocaleString() + " sq ft · " + est.effLabel;
 
     var rows = "<table>";
     rows += "<tr><td>System</td><td>" + est.systemLabel + "</td></tr>";
@@ -162,14 +151,12 @@
 
   /* ---------- Lead delivery ---------- */
   function deliverLead(lead) {
-    // 1) Always save locally so nothing is ever lost.
     try {
       var saved = JSON.parse(localStorage.getItem("hvac_leads") || "[]");
       saved.push(lead);
       localStorage.setItem("hvac_leads", JSON.stringify(saved));
     } catch (e) { /* ignore storage errors */ }
 
-    // 2) Preferred: POST to a webhook (n8n / Make / Zapier / GHL).
     var url = CFG.leads.webhookUrl;
     if (url) {
       fetch(url, {
@@ -180,12 +167,11 @@
       return;
     }
 
-    // 3) Fallback: open a pre-filled email to the owner.
     if (CFG.leads.ownerEmail) {
       var body = encodeURIComponent(
         "New HVAC estimate request\n\n" +
         "Name: " + lead.name + "\nPhone: " + lead.phone + "\nEmail: " + lead.email + "\n" +
-        "Address: " + lead.address + "\nBest time: " + lead.contactTime + "\n\n" +
+        "Address: " + lead.address + "\n\n" +
         "Job: " + lead.systemLabel + " · ~" + lead.tons + " ton · " + lead.sqft + " sq ft · " + lead.effLabel + "\n" +
         "Add-ons: " + (lead.addons.join(", ") || "none") + "\n" +
         "Estimate shown: " + money(lead.low) + " – " + money(lead.high)
@@ -203,26 +189,20 @@
 
     var name = $("name").value.trim();
     var phone = $("phone").value.trim();
-    if (!state.system) { return fail(err, "Please pick what you need in step 1."); }
+    if (!state.system) { return fail(err, "Please pick what you need above."); }
     if (!name) { return fail(err, "Please add your name so we can reach you."); }
     if (!phone) { return fail(err, "Please add a phone number."); }
 
     var est = computeEstimate();
     var lead = {
-      name: name,
-      phone: phone,
+      name: name, phone: phone,
       email: $("email").value.trim(),
       address: $("address").value.trim(),
-      contactTime: $("contactTime").value,
-      system: state.system,
-      systemLabel: est.systemLabel,
-      efficiency: state.efficiency,
-      effLabel: est.effLabel,
-      sqft: est.sqft,
-      tons: est.tons,
+      system: state.system, systemLabel: est.systemLabel,
+      efficiency: state.efficiency, effLabel: est.effLabel,
+      sqft: est.sqft, tons: est.tons,
       addons: Object.keys(state.addons).filter(function (k) { return state.addons[k]; }),
-      low: est.low,
-      high: est.high,
+      low: est.low, high: est.high,
       submittedAt: new Date().toISOString()
     };
 
@@ -241,8 +221,6 @@
   /* ---------- Init ---------- */
   applyBranding();
   buildForm();
-  ["sqft", "name", "phone"].forEach(function (id) { $(id).addEventListener("input", updateProgress); });
   $("quoteForm").addEventListener("submit", onSubmit);
   $("restartBtn").addEventListener("click", restart);
-  updateProgress();
 })();

@@ -19,13 +19,13 @@ window.QUOTE_CONFIG = {
    * 1. BRANDING
    * ------------------------------------------------------------- */
   branding: {
-    companyName: "Your HVAC Company",        // <-- put your business name here
-    tagline: "Instant ballpark estimate in 60 seconds",
-    phone: "(801) 555-0100",                 // <-- your phone, shown on the page
-    phoneHref: "tel:+18015550100",           // <-- same number, digits only after +1
-    primaryColor: "#0c6cf2",                 // main brand color (buttons, accents)
-    accentColor: "#0a9b6c",                  // success / price color (green)
-    logoUrl: ""                              // optional: paste an image URL, or leave blank
+    companyName: "Seki Heating and Air",     // <-- put your business name here
+    tagline: "Reliable Heating & Cooling You Can Trust",
+    phone: "(808) 439-2022",                 // <-- your phone, shown on the page
+    phoneHref: "tel:+18084392022",           // <-- same number, digits only after +1
+    primaryColor: "#13294b",                 // main brand color (buttons, accents) — Seki navy
+    accentColor: "#1f6fb2",                  // price / highlight color — Seki blue
+    logoUrl: "seki-logo.jpeg"                // logo file in this folder, or paste a URL
   },
 
   /* ---------------------------------------------------------------
@@ -94,9 +94,8 @@ window.QUOTE_CONFIG = {
    * "kind: mult"   multiplies the whole estimate (e.g. hard access).
    * ------------------------------------------------------------- */
   addons: [
-    { id: "ductwork",   label: "Replace / add ductwork",        kind: "flat", low: 2000, high: 5000 },
-    { id: "thermostat", label: "Smart thermostat",              kind: "flat", low: 250,  high: 500  },
-    { id: "haulaway",   label: "Haul away & dispose old system",kind: "flat", low: 300,  high: 800  },
-    { id: "access",     label: "Attic / tight or difficult access", kind: "mult", low: 1.08, high: 1.15 }
+    { id: "ductwork",   label: "Replace / add ductwork",         kind: "flat", low: 2000, high: 5000 },
+    { id: "thermostat", label: "Smart thermostat",               kind: "flat", low: 250,  high: 500  },
+    { id: "haulaway",   label: "Haul away & dispose old system", kind: "flat", low: 300,  high: 800  }
   ]
 };

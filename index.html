@@ -4,71 +4,61 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Instant HVAC Estimate</title>
-  <meta name="description" content="Get an instant ballpark estimate for a new HVAC system in 60 seconds." />
+  <meta name="description" content="Get an instant ballpark estimate for a new HVAC system." />
+  <link rel="icon" href="seki-logo.jpeg" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="wrap">
     <header class="head">
-      <div class="brand">
-        <img id="logo" class="logo" alt="" hidden />
-        <div>
-          <h1 id="companyName">Your HVAC Company</h1>
-          <p id="tagline" class="tagline">Instant ballpark estimate in 60 seconds</p>
-        </div>
-      </div>
-      <a id="callBtn" class="call-btn" href="tel:+18015550100">📞 <span id="phoneText">(801) 555-0100</span></a>
+      <img id="logo" class="logo" src="seki-logo.jpeg" alt="Seki Heating and Air" />
+      <h1 id="companyName" class="visually-hidden">Seki Heating and Air</h1>
+      <p id="tagline" class="tagline">Reliable Heating &amp; Cooling You Can Trust</p>
+      <a id="callBtn" class="call-btn" href="tel:+18084392022">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span id="phoneText">(808) 439-2022</span>
+      </a>
     </header>
 
     <!-- ============ FORM ============ -->
-    <form id="quoteForm" class="card" novalidate>
-      <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+    <form id="quoteForm" class="card" novalidate autocomplete="off">
+      <p class="lead-in">Answer a few quick questions for an instant ballpark on a new system.</p>
 
       <section class="step">
-        <h2>1. What do you need?</h2>
-        <div id="systemOptions" class="choice-grid"><!-- filled by JS --></div>
+        <h2>What do you need?</h2>
+        <div id="systemOptions" class="choice-list"><!-- filled by JS --></div>
       </section>
 
       <section class="step">
-        <h2>2. About how big is the home?</h2>
+        <h2>About how big is the home?</h2>
         <label class="field">
-          <span>Square footage (living space)</span>
+          <span>Square footage</span>
           <input type="number" id="sqft" name="sqft" min="400" max="12000" step="50" value="2000" inputmode="numeric" />
-          <small class="hint">Not sure? A rough guess is fine — we'll confirm on site.</small>
+          <small class="hint">A rough guess is fine — we confirm on site.</small>
         </label>
       </section>
 
       <section class="step">
-        <h2>3. Efficiency preference</h2>
+        <h2>Efficiency preference</h2>
         <div id="effOptions" class="choice-row"><!-- filled by JS --></div>
-        <small class="hint">High-efficiency costs more up front but lowers monthly bills and may qualify for rebates.</small>
       </section>
 
       <section class="step">
-        <h2>4. Anything else? <span class="optional">(optional)</span></h2>
+        <h2>Anything else? <span class="optional">optional</span></h2>
         <div id="addonOptions" class="addon-list"><!-- filled by JS --></div>
       </section>
 
       <section class="step">
-        <h2>5. Where should we send it?</h2>
-        <div class="grid-2">
-          <label class="field"><span>Full name</span><input type="text" id="name" name="name" autocomplete="name" required /></label>
+        <h2>Where should we send it?</h2>
+        <div class="fields">
+          <label class="field"><span>Name</span><input type="text" id="name" name="name" autocomplete="name" required /></label>
           <label class="field"><span>Phone</span><input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" required /></label>
-          <label class="field"><span>Email</span><input type="email" id="email" name="email" autocomplete="email" /></label>
-          <label class="field"><span>Property address</span><input type="text" id="address" name="address" autocomplete="street-address" /></label>
+          <label class="field"><span>Email <em>optional</em></span><input type="email" id="email" name="email" autocomplete="email" /></label>
+          <label class="field"><span>Property address <em>optional</em></span><input type="text" id="address" name="address" autocomplete="street-address" /></label>
         </div>
-        <label class="field">
-          <span>Best time to reach you</span>
-          <select id="contactTime" name="contactTime">
-            <option value="Anytime">Anytime</option>
-            <option value="Morning">Morning</option>
-            <option value="Afternoon">Afternoon</option>
-            <option value="Evening">Evening</option>
-          </select>
-        </label>
       </section>
 
-      <button type="submit" id="submitBtn" class="cta">Get my instant estimate →</button>
+      <button type="submit" id="submitBtn" class="cta">Get my estimate</button>
       <p id="formError" class="form-error" hidden></p>
     </form>
 
@@ -78,11 +68,13 @@
       <div id="priceRange" class="price-range">$0 – $0</div>
       <p id="resultSummary" class="result-summary"></p>
 
-      <div class="result-cta">
-        <p><strong>This is a ballpark, not a final quote.</strong> Your exact price depends on your equipment, layout, and condition of your current system — confirmed at a free, no-pressure in-home visit.</p>
-        <a id="resultCall" class="cta" href="tel:+18015550100">📞 Call to lock in your free visit</a>
-        <button type="button" id="restartBtn" class="ghost-btn">Start over</button>
-      </div>
+      <p class="result-note"><strong>This is a ballpark, not a final quote.</strong> Your exact price depends on your equipment, layout, and current system — confirmed at a free in-home visit.</p>
+
+      <a id="resultCall" class="cta" href="tel:+18084392022">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Call to book your free visit
+      </a>
+      <button type="button" id="restartBtn" class="ghost-btn">Start over</button>
 
       <details class="how">
         <summary>How we calculated this</summary>
